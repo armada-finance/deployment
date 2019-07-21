@@ -2,10 +2,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kubernetes-service
-  run.armada/part-of: login
-  run.armada/component: keycloack
-  run.armada/tier: service
-  run.armada/version: v1
+  labels:
+    run.armada/part-of: login
+    run.armada/component: keycloack
+    run.armada/tier: service
+    run.armada/version: v1
 spec:
   ports: 
   - port: 8080
