@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-deployment
+  labels:
+    run.armada/part-of: login
+    run.armada/component: keycloack
+    run.armada/tier: deployment
+    run.armada/version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run.armada/component: keycloack
+  template:
+    metadata:
+      name: keycloak
+      labels:
+        run.armada/part-of: login
+        run.armada/component: keycloack
+        run.armada/tier: application
+        run.armada/version: v1
+    spec:
+      containers:
+      - name: keycloak-container
+        image: jboss/keycloak
+        env:
+        - name : KEYCLOAK_USER
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-secret
+              key: username
+        - name : KEYCLOAK_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-secret
+              key: password
+
