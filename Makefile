@@ -6,6 +6,7 @@ NAMESPACE=armada-local
 help:
 	@echo "============= Armada Makefile Targets =============\n"
 	@echo "namespace:       creates the required namespace to run Armada"
+	@echo "switch:          switches to Armada current namespace"
 	@echo "keycloak:        creates all resources to run keycloak"
 	@echo "all:             performs all tasks required to setup and run Armada cluster"
 
@@ -13,6 +14,11 @@ help:
 namespace:
 	@echo "============= Creating Armada Namespace ============="
 	$(KUBEAPPLY) -f namespaces/local.yaml
+
+.PHONY: switch
+switch:
+	@echo "============= Switching to Armada Namespace ============="
+	$(CMD) config set-context --current --namespace=$(NAMESPACE)
 
 .PHONY: keycloak
 keycloak:
@@ -25,4 +31,5 @@ keycloak:
 all:
 	@echo "============ Setup and Run Armada ============="
 	$(MAKE) namespace
+	$(MAKE) switch
 	$(MAKE) keycloak
