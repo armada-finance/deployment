@@ -3,16 +3,9 @@ kind: Service
 metadata:
   name: keycloak-service
   labels:
-    run.armada/part-of: login
     run.armada/component: keycloack
-    run.armada/tier: service
-    run.armada/version: v1
 spec:
   ports: 
   - port: 8080
-    nodePort: 31004
   selector:
-    run.armada/part-of: login
     run.armada/component: keycloack
-    run.armada/tier: deployment
-  type: NodePort

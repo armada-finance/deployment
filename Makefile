@@ -7,6 +7,7 @@ help:
 	@echo "============= Armada Makefile Targets =============\n"
 	@echo "namespace:       creates the required namespace to run Armada"
 	@echo "switch:          switches to Armada current namespace"
+	@echo "ingreess:        deploys an Ingress Controller"
 	@echo "keycloak:        creates all resources to run keycloak"
 	@echo "all:             performs all tasks required to setup and run Armada cluster"
 
@@ -19,6 +20,13 @@ namespace:
 switch:
 	@echo "============= Switching to Armada Namespace ============="
 	$(CMD) config set-context --current --namespace=$(NAMESPACE)
+
+.PHONY: ingress
+ingress:
+	@echo "============= Deploying Ingress Controller ============="
+	$(KUBEAPPLY) -f ingress-controller/armada-nginx-config.yaml -n $(NAMESPACE)
+	$(KUBEAPPLY) -f ingress-controller/armada-nginx-controller.yaml -n $(NAMESPACE)
+	$(KUBEAPPLY) -f ingress-controller/armada-nginx-nodeport.yaml -n $(NAMESPACE)
 
 .PHONY: keycloak
 keycloak:

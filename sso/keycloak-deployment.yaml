@@ -11,7 +11,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
+      run.armada/part-of: login
       run.armada/component: keycloack
+      run.armada/tier: application
+  strategy:
+    type: Recreate
   template:
     metadata:
       name: keycloak
@@ -24,6 +28,9 @@ spec:
       containers:
       - name: keycloak-container
         image: jboss/keycloak
+        ports:
+        - containerPort: 8080
+          name : keycloak-app
         env:
         - name : KEYCLOAK_USER
           valueFrom:
