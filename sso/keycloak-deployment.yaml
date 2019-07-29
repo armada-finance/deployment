@@ -1,3 +1,4 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,17 +30,21 @@ spec:
       - name: keycloak-container
         image: jboss/keycloak
         ports:
-        - containerPort: 8080
-          name : keycloak-app
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 8443
         env:
-        - name : KEYCLOAK_USER
-          valueFrom:
-            secretKeyRef:
-              name: keycloak-secret
-              key: username
-        - name : KEYCLOAK_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: keycloak-secret
-              key: password
+        - name: KEYCLOAK_USER
+          value: "admin"
+        - name: KEYCLOAK_PASSWORD
+          value: "admin"
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+        - name: DB_VENDOR
+          value: "h2"
+        readinessProbe:
+          httpGet:
+            path: /auth/realms/master
+            port: 8080
 
