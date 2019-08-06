@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: keycloak-deployment
+  name: keycloak
   labels:
     run.armada/part-of: login
     run.armada/component: keycloack
@@ -32,8 +32,8 @@ spec:
         ports:
         - name: http
           containerPort: 8080
-        - name: https
-          containerPort: 8443
+        - name: management
+          containerPort: 9090
         env:
         - name: KEYCLOAK_USER
           valueFrom: 

@@ -1,11 +1,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: keycloak-service
+  name: keycloak
   labels:
     run.armada/component: keycloack
+    run.armada/part-of: login
+    run.armada/tier: deployment
+    run.armada/version: v1
 spec:
-  ports: 
+  type: NodePort
+  ports:
   - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 9090
+    protocol: TCP
+    name: management
+    targetPort: 8443
   selector:
+    run.armada/part-of: login
     run.armada/component: keycloack
+    run.armada/tier: application
+    run.armada/version: v1

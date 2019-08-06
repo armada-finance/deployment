@@ -23,7 +23,7 @@ keycloak:
 	$(KUBEAPPLY) -f sso/keycloak-service.yaml -n $(NAMESPACE)
 
 	@echo "Keycloak address:"
-	$(MINIKUBE) service keycloak-deployment --url
+	$(MINIKUBE) service keycloak --url
 
 .PHONY: all-minikube
 all-minikube:
