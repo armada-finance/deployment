@@ -6,29 +6,14 @@ NAMESPACE=default
 .PHONY: help
 help:
 	@echo "============= Armada Makefile Targets =============\n"
-	@echo "namespace:       creates the required namespace to run Armada"
-	@echo "switch:          switches to Armada current namespace"
-	@echo "ingreess:        deploys an Ingress Controller"
-	@echo "keycloak:        creates all resources to run keycloak"
-	@echo "all-minikube:     performs all tasks required to setup and run Armada on a Minikube cluster"
+	@echo "ingress-minikube:    deploys an Ingress Controller into Minikube Cluster"
+	@echo "keycloak:            creates all resources to run keycloak"
+	@echo "all-minikube:        performs all tasks required to setup and run Armada on a Minikube cluster"
 
-.PHONY: namespace
-namespace:
-	@echo "============= Creating Armada Namespace ============="
-	# $(KUBEAPPLY) -f namespaces/local.yaml
-
-.PHONY: switch
-switch:
-	@echo "============= Switching to Armada Namespace ============="
-	$(CMD) config set-context --current --namespace=$(NAMESPACE)
-
-.PHONY: ingress
-ingress:
-	@echo "============= Deploying Ingress Controller ============="
+.PHONY: ingress-minikube
+ingress-minikube:
+	@echo "============= Deploying Ingress Controller into Minikube ============="
 	$(MINIKUBE) addons enable ingress
-	# $(KUBEAPPLY) -f ingress-controller/armada-nginx-config.yaml -n $(NAMESPACE)
-	# $(KUBEAPPLY) -f ingress-controller/armada-nginx-controller.yaml -n $(NAMESPACE)
-	# $(KUBEAPPLY) -f ingress-controller/armada-nginx-nodeport.yaml -n $(NAMESPACE)
 
 .PHONY: keycloak
 keycloak:
@@ -37,9 +22,11 @@ keycloak:
 	$(KUBEAPPLY) -f sso/keycloak-deployment.yaml -n $(NAMESPACE)
 	$(KUBEAPPLY) -f sso/keycloak-service.yaml -n $(NAMESPACE)
 
+	@echo "Keycloak address:"
+	$(MINIKUBE) service keycloak-deployment --url
+
 .PHONY: all-minikube
 all-minikube:
 	@echo "============ Setup and Run Armada on Minikube ============="
-	$(MAKE) namespace
-	$(MAKE) switch
+	$(MAKE) ingress-minikube
 	$(MAKE) keycloak
