@@ -21,6 +21,7 @@ keycloak:
 	$(KUBEAPPLY) -f sso/keycloak-secret.yaml -n $(NAMESPACE)
 	$(KUBEAPPLY) -f sso/keycloak-deployment.yaml -n $(NAMESPACE)
 	$(KUBEAPPLY) -f sso/keycloak-service.yaml -n $(NAMESPACE)
+	$(KUBEAPPLY) -f sso/keycloak-ingress.yaml -n $(NAMESPACE)
 
 	@echo "Keycloak address:"
 	$(MINIKUBE) service keycloak --url

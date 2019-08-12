@@ -2,7 +2,14 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: armada-ingress-keycloak
+  annotations:
+    INGRESS.kubernetes.io/rewrite-target: /
 spec: 
-  backend:
-    serviceName: keycloak-service
-    servicePort: 8080
+  rules:
+  - host: login.armada.run
+    http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: keycloak
+          servicePort: 8080
