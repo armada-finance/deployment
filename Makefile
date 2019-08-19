@@ -19,6 +19,9 @@ ingress-minikube:
 keycloak:
 	@echo "============= Creating Armada Keycloak ============="
 	$(KUBEAPPLY) -f sso/keycloak-secret.yaml -n $(NAMESPACE)
+	$(KUBEAPPLY) -f sso/keycloak-configs.yaml -n $(NAMESPACE)
+	$(KUBEAPPLY) -f sso/keycloak-postgres-deployment.yaml -n $(NAMESPACE)
+	$(KUBEAPPLY) -f sso/keycloak-postgres-service.yaml -n $(NAMESPACE)
 	$(KUBEAPPLY) -f sso/keycloak-deployment.yaml -n $(NAMESPACE)
 	$(KUBEAPPLY) -f sso/keycloak-service.yaml -n $(NAMESPACE)
 	$(KUBEAPPLY) -f sso/keycloak-ingress.yaml -n $(NAMESPACE)

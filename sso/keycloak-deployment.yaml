@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: keycloak-container
-        image: jboss/keycloak
+        image: jboss/keycloak:3.4.2.Final
         ports:
         - name: http
           containerPort: 8080
@@ -47,10 +47,35 @@ spec:
               key: password
         - name: PROXY_ADDRESS_FORWARDING
           value: "true"
-        - name: DB_VENDOR
-          value: "h2"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         readinessProbe:
           httpGet:
             path: /auth/realms/master
             port: 8080
+        command:
+        - /scripts/run.sh
+        args: []
+        volumeMounts:
+          - name: keycloak-scripts
+            mountPath: "/scripts"
+            readOnly: true
+      volumes:
+      - name: keycloak-scripts
+        projected:
+          sources:
+          - configMap:
+              name: keycloak-scripts-configmap
+              items:
+              - key: REPLICAS
+                path: REPLICAS
+                mode: 0444
+              - key: run.sh
+                path: run.sh
+                mode: 0755
+              - key: standalone-ha.xml
+                path: standalone-ha.xml
+                mode: 0644
 

@@ -3,13 +3,17 @@ kind: Ingress
 metadata:
   name: armada-ingress-keycloak
   annotations:
-    INGRESS.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/rewrite-target: /
 spec: 
   rules:
   - host: login.armada.run
     http:
       paths:
-      - path: /*
+      - path: /
+        backend:
+          serviceName: keycloak
+          servicePort: 8080
+      - path: /auth
         backend:
           serviceName: keycloak
           servicePort: 8080

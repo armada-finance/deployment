@@ -1,0 +1,107 @@
+---
+apiVersion: apps/v1
+# Change to apps/v1beta2 for K8s < 1.9
+kind: StatefulSet
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  serviceName: keycloak
+  replicas: 2
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      volumes:
+      - name: keycloak-scripts
+        projected:
+          sources:
+          - configMap:
+              name: keycloak-scripts-cm
+              items:
+              - key: REPLICAS
+                path: REPLICAS
+                mode: 0444
+              - key: run.sh
+                path: run.sh
+                mode: 0755
+              - key: standalone-ha.xml
+                path: standalone-ha.xml
+                mode: 0644
+      containers:
+        - name: keycloak
+          image: jboss/keycloak:3.4.2.Final
+          ports:
+            - name: https
+              containerPort: 8443
+            - name: management
+              containerPort: 9090
+            - name: jgroups-tcp
+              containerPort: 7600
+            - name: jgroups-tcp-fd
+              containerPort: 57600
+            - name: jgroups-udp
+              containerPort: 55200
+              protocol: UDP
+            - name: jgroups-udp-mc
+              containerPort: 45688
+              protocol: UDP
+            - name: jgroups-udp-fd
+              containerPort: 54200
+              protocol: UDP
+            - name: modcluster
+              containerPort: 23364
+            - name: modcluster-udp
+              containerPort: 23364
+              protocol: UDP
+            - name: txn-recovery-ev
+              containerPort: 4712
+            - name: txn-status-mgr
+              containerPort: 4713
+          envFrom:
+          - configMapRef:
+              name: keycloak-env
+          - secretRef:
+              name: keycloak-secret
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          command:
+            - /scripts/run.sh
+          args: []
+          volumeMounts:
+          - name: keycloak-scripts
+            mountPath: "/scripts"
+            readOnly: true
+          readinessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 2
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 25
+            periodSeconds: 7
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "750m"
+              memory: "1Gi"
